@@ -4,8 +4,8 @@
     <canvas class="renderCanvas"></canvas>
   </div>
 </template>
-
 <script lang="ts">
+
 import { defineComponent, render } from 'vue';
 import { MainScene } from '@/babylon/MainScene'
 

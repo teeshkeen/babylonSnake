@@ -1,7 +1,8 @@
-import { HavokPlugin, Physics6DoFConstraint, PhysicsConstraintAxis, Scene, Vector3 } from "@babylonjs/core";
+import { HavokPlugin, MeshBuilder, Physics6DoFConstraint, PhysicsConstraintAxis, Scene, Vector3 } from "@babylonjs/core";
 import { MeshManager } from "./MeshManager";
 import { PhysicsBodyManager } from "./PhysicsBodyManager";
 import { PointerInteraction } from "./PointerInteraction";
+import { PhysicsBody, PhysicsHelper, PhysicsImpostor, PhysicsMotionType } from "@babylonjs/core/Physics";
 import HavokPhysics from '@babylonjs/havok';
 
 export class PhysicsManager {
@@ -29,40 +30,58 @@ export class PhysicsManager {
     async activatePhysics(scene: Scene) {
         await this.enableHavokPhysics(scene);
 
-        const boxes = this.meshManager.createBoxes(4, scene);
-        const aggregates = this.bodyManager.createPhysicsBody(boxes, false);
+        // const ground = this.meshManager.createGround('ground', { width: 20, height: 20 }, scene);
+        // const groundBoy = this.bodyManager.createPhysicGround(ground);
+        // groundBoy.setMassProperties({ mass: 10000 })
+        // ground.physicsBody = groundBoy;
 
+        const boxes = this.meshManager.createBoxes(4, scene);
+        const aggregates = this.bodyManager.createPhysicsBody(boxes);
+
+        // for (let i = 0; i < boxes.length; i++) {
+        //     aggregates[i].setMassProperties({ mass: 10 });
+        //     boxes[i].physicsBody = aggregates[i];
+        // }
 
         for (let i = 0; i < boxes.length - 1; i++) {
             const sixDoF = new Physics6DoFConstraint(
                 {
-                    pivotA: new Vector3(0.5, 0, 0),
+                    pivotA: new Vector3(0, 0, 0),
                     axisA: new Vector3(0, 0, 0),
-                    pivotB: new Vector3(0.5, 0, 0),
+                    pivotB: new Vector3(0, 0, 0),
                     axisB: new Vector3(0, 0, 0),
+                    collision: true
                 },
                 [
                     {
-                        axis: PhysicsConstraintAxis.LINEAR_DISTANCE,
+                        axis: PhysicsConstraintAxis.LINEAR_X,
                         minLimit: 1,
-                        maxLimit: 1.05,
+                        maxLimit: 1.2
                     },
                     {
-                        /* решил повернуть по оси Х чтобы было больше похоже на змейку :3 
-                            ну и чтоб было видно грани мешей, чтоб понимать куда кликать */
-                        axis: PhysicsConstraintAxis.ANGULAR_X,
-                        minLimit: 0.3,
-                        maxLimit: 0.3,
-                    },
-                    {
-                        axis: PhysicsConstraintAxis.ANGULAR_Y,
+                        axis: PhysicsConstraintAxis.LINEAR_Y, 
                         minLimit: 0,
-                        maxLimit: 0,
+                        maxLimit: 0.2
                     },
                     {
-                        axis: PhysicsConstraintAxis.ANGULAR_Z,
+                        axis: PhysicsConstraintAxis.LINEAR_Z, 
                         minLimit: 0,
-                        maxLimit: 0,
+                        maxLimit: 0
+                    },
+                    {
+                        axis: PhysicsConstraintAxis.ANGULAR_X, 
+                        minLimit: 0,
+                        maxLimit: 0
+                    },
+                    {
+                        axis: PhysicsConstraintAxis.ANGULAR_Y, 
+                        minLimit: 0,
+                        maxLimit: 0
+                    },
+                    {
+                        axis: PhysicsConstraintAxis.ANGULAR_Z, 
+                        minLimit: 0,
+                        maxLimit: 0
                     }
                 ],
                 scene
@@ -70,6 +89,5 @@ export class PhysicsManager {
             aggregates[i].addConstraint(aggregates[i + 1], sixDoF);
         }   
         this.pointerManager.setupPointerDrag(boxes, aggregates);
-
     }
 }

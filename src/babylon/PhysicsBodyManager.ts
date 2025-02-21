@@ -7,13 +7,17 @@ export class PhysicsBodyManager {
         this.scene = scene;
     }
 
-    createPhysicsBody(boxes: Mesh[], disablePreStep: boolean): PhysicsBody[] {
+    createPhysicsBody(boxes: Mesh[]): PhysicsBody[] {
         const aggregates = boxes.map((box) => {
             const agg = new PhysicsBody(box, PhysicsMotionType.DYNAMIC, false, this.scene);
-            agg.disablePreStep = disablePreStep;
-
             return agg;
         });
         return aggregates;
     }
+
+    createPhysicGround(ground: Mesh): PhysicsBody {
+        const body = new PhysicsBody(ground, PhysicsMotionType.DYNAMIC, true, this.scene);
+        return body;
+    }
+    
 }

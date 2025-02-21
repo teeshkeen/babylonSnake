@@ -3,12 +3,12 @@ import {
         Engine,
         Mesh,
         PointerEventTypes,
-    } from '@babylonjs/core';
+    } from '@babylonjs/core/';
+
 import { GUI } from './GUI';
 import { CameraManager } from './CameraManager';
 import { LightManager } from './LightManager';
 import { PhysicsManager } from './PhysicsManager';
-
 export class MainScene {
     private readonly scene: Scene;
     private readonly engine: Engine;
@@ -51,9 +51,9 @@ export class MainScene {
                 case PointerEventTypes.POINTERDOWN:
                     if (pointerInfo.pickInfo?.hit) {
                         const wasPickedMesh = pointerInfo.pickInfo.pickedMesh;
-                        const material = "#3d23c5"
+                        const color = "#3d23c5"
                         if (wasPickedMesh !== null && wasPickedMesh instanceof Mesh) {
-                            this.guiManager.setCurrentMesh(wasPickedMesh, material);
+                            this.guiManager.setCurrentMesh(wasPickedMesh, color);
                         }
                     }
                     break;
